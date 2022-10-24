@@ -3,6 +3,7 @@ log all their monthly direct debits and bills. The application will store and di
 coming debts based on the current day and give a minimum required bank balance.
 """
 
+from contextlib import nullcontext
 import os
 import sqlite3
 from turtle import update
@@ -42,15 +43,21 @@ def list_all_debts(bank_balance):
     print("""
     """ * 3)
     
-    all_debts = con.execute("SELECT * FROM Debts")
+    cur.execute("SELECT * FROM Debts")
 
     con.commit()
 
+    all_debts = cur.fetchall()
+#    print(all_debts)
     row_count = len(all_debts)
     record = 0
 
+    print("     ID     Debt Description           Payment Date")
+    print()
+
     while record < row_count:
-        print(all_debts[record][0],all_debts[record][1],all_debts[record][2])
+        print("     {:<7}{:<27}{:<39}".format(all_debts[record][0],all_debts[record][1],all_debts[record][2]))
+#        print(all_debts[record][0],all_debts[record][1],all_debts[record][2])
         record = record + 1
 #    for item in all_debts:
 #        print(item)
@@ -80,14 +87,65 @@ def add_debt(bank_balance):
     
     params = (debt_name, debt_date)
 
-    con.execute("INSERT INTO Debts VALUES (NULL,?,?)", params)
+    cur.execute("INSERT INTO Debts VALUES (NULL,?,?)", params)
     con.commit()
     con.close()
     mainmenu(bank_balance)
 
-def remove_debt():
+def remove_debt(bank_balance):
+    con = sqlite3.connect('DebtRelief.db')
+    cur = con.cursor()
+    clear()
+    print("*" * 100)
+    print("*" * 100)
+    print("**" + " " * 96 + "**")
+    print("**" + " " * 43 + "REMOVE A DEBT" + " " * 44 + "**")
+    print("**" + " " * 96 + "**")
+    print("*" * 100)
+    print("*" * 100)
+    print("""
+    """ * 3)
     
-    pass
+    cur.execute("SELECT * FROM Debts")
+
+    con.commit()
+
+    all_debts = cur.fetchall()
+#    print(all_debts)
+    row_count = len(all_debts)
+    record = 0
+
+    print("     ID     Debt Description           Payment Date")
+    print()
+
+    while record < row_count:
+        print("     {:<7}{:<27}{:<39}".format(all_debts[record][0],all_debts[record][1],all_debts[record][2]))
+#        print(all_debts[record][0],all_debts[record][1],all_debts[record][2])
+        record = record + 1
+#    for item in all_debts:
+#        print(item)
+
+    print()
+    print()
+    check = 0
+    while check != "1":
+
+        todel = input("Please Enter the ID of the Debt to Delete or 'q' to Return to Main Menu... ")
+        print(todel)
+        input()
+        if todel == "q":
+            check = 1
+        else:
+            cur.execute("DELETE FROM Debts WHERE debt_id=?",todel)
+
+            con.commit()
+    
+    
+
+    print()
+    input("Press Any Key to Return to Main Menu")    
+    con.close()
+    mainmenu(bank_balance)
 
 def upcoming_debt_check():
     
@@ -136,7 +194,7 @@ def mainmenu(bank_balance):
         if choice == "1":
             add_debt(bank_balance)
         if choice == "2":
-            remove_debt()
+            remove_debt(bank_balance)
         if choice == "3":
             list_all_debts(bank_balance)
         if choice == "4":
