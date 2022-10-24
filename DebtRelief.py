@@ -8,9 +8,10 @@ import sqlite3
 from turtle import update
 from typing import ParamSpec
 
-
-
 bank_balance = 0
+
+ADD_DEBT = "INSERT INTO Debts (debt_name, debt_date) VALUES (?,?)"
+
 
 # Function to clear the screen
 def clear():
@@ -26,15 +27,63 @@ def create_database():
                 debt_date text)
     """)
     con.close()
-    pass
 
-def add_debt():
+def list_all_debts(bank_balance):
+    con = sqlite3.connect('DebtRelief.db')
+    cur = con.cursor()
+    clear()
+    print("*" * 100)
+    print("*" * 100)
+    print("**" + " " * 96 + "**")
+    print("**" + " " * 41 + "LIST ALL DEBTS" + " " * 41 + "**")
+    print("**" + " " * 96 + "**")
+    print("*" * 100)
+    print("*" * 100)
+    print("""
+    """ * 3)
     
-    pass
+    all_debts = con.execute("SELECT * FROM Debts")
 
-def list_all_debts():
+    con.commit()
+
+    row_count = len(all_debts)
+    record = 0
+
+    while record < row_count:
+        print(all_debts[record][0],all_debts[record][1],all_debts[record][2])
+        record = record + 1
+#    for item in all_debts:
+#        print(item)
+
+    print()
+    input("Press Any Key to Return to Main Menu")    
+    con.close()
+    mainmenu(bank_balance)
     
-    pass
+
+def add_debt(bank_balance):
+    con = sqlite3.connect('DebtRelief.db')
+    cur = con.cursor()
+    clear()
+    print("*" * 100)
+    print("*" * 100)
+    print("**" + " " * 96 + "**")
+    print("**" + " " * 44 + "ADD DEBT" + " " * 44 + "**")
+    print("**" + " " * 96 + "**")
+    print("*" * 100)
+    print("*" * 100)
+    print("""
+    """ * 13)
+    debt_name = input("Please Enter the Debt Name... ")
+    print()
+    debt_date = input("Please Enter the Debt Payment Date... ")
+    
+    params = (debt_name, debt_date)
+
+    con.execute("INSERT INTO Debts VALUES (NULL,?,?)", params)
+    con.commit()
+    con.close()
+    mainmenu(bank_balance)
 
 def remove_debt():
     
@@ -59,7 +108,7 @@ def bank_balance_update():
     bank_balance = new_bank_balance
     print(bank_balance)
     input()
-    mainmenu(new_bank_balance)
+    mainmenu(bank_balance)
 
 # Main Menu - Add Debt / List All Debts / Remove Debts / Upcoming Debts Check / Bank Balance Update
 def mainmenu(bank_balance):
@@ -81,15 +130,15 @@ def mainmenu(bank_balance):
     print("""
     """ * 5)
     
-    choice = input(f"   Current Balance... £{bank_balance}                                       Please Make a Selection... ")
+    choice = input(f"       Current Balance... £{bank_balance}                              Please Make a Selection... ")
 
     while choice != 1 or 2 or 3 or 4 or 5 or 6:
         if choice == "1":
-            add_debt()
+            add_debt(bank_balance)
         if choice == "2":
             remove_debt()
         if choice == "3":
-            list_all_debts()
+            list_all_debts(bank_balance)
         if choice == "4":
             upcoming_debt_check()
         if choice == "5":
