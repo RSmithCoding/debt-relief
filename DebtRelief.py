@@ -13,6 +13,7 @@ import datetime
 
 bank_balance = 0
 
+
 ADD_DEBT = "INSERT INTO Debts (debt_name, debt_date) VALUES (?,?)"
 
 
@@ -105,7 +106,7 @@ def remove_debt(bank_balance):
     print("*" * 100)
     print("*" * 100)
     print("**" + " " * 96 + "**")
-    print("**" + " " * 43 + "REMOVE A DEBT" + " " * 44 + "**")
+    print("**" + " " * 41 + "REMOVE A DEBT" + " " * 42 + "**")
     print("**" + " " * 96 + "**")
     print("*" * 100)
     print("*" * 100)
@@ -130,15 +131,12 @@ def remove_debt(bank_balance):
         record = record + 1
 #    for item in all_debts:
 #        print(item)
-
-    print()
     print()
     check = 0
     while check != "1":
 
         todel = input("Please Enter the ID of the Debt to Delete or 'q' to Return to Main Menu... ")
-        print(todel)
-        input()
+        
         if str(todel) == "q":
             check = 1
             break
@@ -148,24 +146,35 @@ def remove_debt(bank_balance):
             con.commit()
     
     
-
+    print()
     input("Press Any Key to Return to Main Menu")    
     con.close()
     mainmenu(bank_balance)
 
 def upcoming_debt_check(bank_balance):
     clear()
+    print("*" * 100)
+    print("*" * 100)
+    print("**" + " " * 96 + "**")
+    print("**" + " " * 38 + "UPCOMING DEBT CHECK" + " " * 39 + "**")
+    print("**" + " " * 96 + "**")
+    print("*" * 100)
+    print("*" * 100)
+    print("""
+    """ * 3)
+
     con = sqlite3.connect('DebtRelief.db')
     cur = con.cursor()
 
     days_list = []
-    
+    total_cost = 0
+    new_balance = 0
     # get todays date
     current_date = datetime.date.today()
     
     # Get the number of days ahead that you would like to check for debts
     days_ahead = input("How Many Days Ahead... ")
-
+    print()
     # Get the new date from adding days from input
     new_date = current_date + datetime.timedelta(days=float(days_ahead))
 
@@ -189,14 +198,24 @@ def upcoming_debt_check(bank_balance):
     # Lists the debts in the date range
     print("The Following Debts Are Within The Selected Date Range:")
     print()
-    print("Debt             Date Due")
+    print("Debt             Date Due            Debt Cost")
     print()
 
     for record in records:
         if record[2] in days_list:
-            print(f"{record[1]}              {record[2]}")
+            print("{:<16} {:<20} {:<16}".format(record[1],record[2],record[3]))
+            #print(f"{record[1]}             {record[2]}                   {record[3]}")
+            total_cost = total_cost + int(record[3])
+            new_balance = int(bank_balance) - total_cost
+            
 
+    # Get all debt costs total and take them from bank balance into new balance to display to screen
     print()
+    print(f"You will need £{total_cost} in the bank to cover debts")
+    print()
+    print(f"Based on your current balance you will have £{new_balance} left")
+    print()
+    
     input("Press 'Enter' to return to the Main Menu...")
 
     con.close()
@@ -213,11 +232,10 @@ def bank_balance_update():
     print("*" * 100)
     print("*" * 100)
     print("""
-    """ * 13)
+    """ * 18)
     new_bank_balance = input("Please Enter Your Bank Balance... ")
     bank_balance = new_bank_balance
-    print(bank_balance)
-    input()
+    
     mainmenu(bank_balance)
 
 # Main Menu - Add Debt / List All Debts / Remove Debts / Upcoming Debts Check / Bank Balance Update
