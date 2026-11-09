@@ -1,4 +1,4 @@
-""" This is a small console application using curses ans sqlite. Would like the user to put in their bank balance and 
+""" This is a small console application using curses and sqlite. Would like the user to put in their bank balance and 
 log all their monthly direct debits and bills. The application will store and display the debts. It will also show up 
 coming debts based on the current day and give a minimum required bank balance.
 """
@@ -141,7 +141,7 @@ def remove_debt(bank_balance):
             check = 1
             break
         else:
-            cur.execute("DELETE FROM Debts WHERE debt_id=?",todel)
+            cur.execute("DELETE FROM Debts WHERE debt_id=?", (todel,))
 
             con.commit()
     
