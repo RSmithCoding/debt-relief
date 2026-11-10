@@ -12,9 +12,6 @@ import datetime
 bank_balance = float(0)
 
 
-ADD_DEBT = "INSERT INTO Debts (debt_name, debt_date) VALUES (?,?)"
-
-
 # Function to clear the screen
 def clear():
     os.system('clear')
@@ -91,7 +88,7 @@ def add_debt(bank_balance):
     except ValueError:
         print("Please enter a valid value..")
 
-    
+
     params = (debt_name, debt_date, debt_cost)
 
     cur.execute("INSERT INTO Debts VALUES (NULL,?,?,?)", params)
