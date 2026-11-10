@@ -84,10 +84,14 @@ def add_debt(bank_balance):
     """ * 13)
     debt_name = input("Please Enter the Debt Name... ")
     print()
-    debt_date = input("Please Enter the Debt Payment Date... ")
+    debt_date = input("Please Enter the Debt Payment Day of the Month...0 - 31 ")
     print()
-    debt_cost = input("Please Enter the Debt Cost... ")
+    try: 
+        debt_cost = float(input("Please Enter the Debt Cost...£ "))
+    except ValueError:
+        print("Please enter a valid value..")
 
+    
     params = (debt_name, debt_date, debt_cost)
 
     cur.execute("INSERT INTO Debts VALUES (NULL,?,?,?)", params)
@@ -195,7 +199,6 @@ def upcoming_debt_check(bank_balance):
     print("Debt             Date Due            Debt Cost")
     print()
 
-    input(f"this is current balance at this point {bank_balance}")
 
     for record in records:
         if record[2] in days_list:
