@@ -90,9 +90,9 @@ def add_debt(bank_balance):
                     print()
                     break
                 else:
-                    print("This needs to be a vaule between 1 - 31..")
+                    print("This needs to be a value between 1 - 31..")
             except ValueError:
-                print("Please enter a vaild number between 1 - 31..")
+                print("Please enter a valid number between 1 - 31..")
 
     while True:
 
@@ -103,7 +103,7 @@ def add_debt(bank_balance):
             print("Please enter a valid value..")
 
 
-    params = (debt_name, debt_date, debt_cost)
+    params = (debt_name, day, debt_cost)
 
     cur.execute("INSERT INTO Debts VALUES (NULL,?,?,?)", params)
     con.commit()
