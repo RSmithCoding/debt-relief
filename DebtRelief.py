@@ -1,17 +1,15 @@
-""" This is a small console application using curses and sqlite. Would like the user to put in their bank balance and 
+""" This is a small console application using sqlite. Would like the user to put in their bank balance and 
 log all their monthly direct debits and bills. The application will store and display the debts. It will also show up 
 coming debts based on the current day and give a minimum required bank balance.
 """
 
-from contextlib import nullcontext
-from io import DEFAULT_BUFFER_SIZE
+
+
 import os
 import sqlite3
-from turtle import update
-from typing import ParamSpec
 import datetime
 
-bank_balance = 0
+bank_balance = float(0)
 
 
 ADD_DEBT = "INSERT INTO Debts (debt_name, debt_date) VALUES (?,?)"
@@ -29,7 +27,7 @@ def create_database():
                 debt_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 debt_name TEXT,
                 debt_date TEXT,
-                debt_cost TEXT)
+                debt_cost REAL)
     """)
     con.close()
     mainmenu(bank_balance)
@@ -53,7 +51,7 @@ def list_all_debts(bank_balance):
     con.commit()
 
     all_debts = cur.fetchall()
-#    print(all_debts)
+
     row_count = len(all_debts)
     record = 0
 
@@ -61,11 +59,9 @@ def list_all_debts(bank_balance):
     print()
 
     while record < row_count:
-        print("     {:<6} {:<26} {:<17} {:<45}".format(all_debts[record][0],all_debts[record][1],all_debts[record][2],all_debts[record][3]))
-        #print(all_debts[record][0],all_debts[record][1],all_debts[record][2],all_debts[record][3])
+        print("     {:<6} {:<26} {:<17} {:<45.2f}".format(all_debts[record][0],all_debts[record][1],all_debts[record][2],all_debts[record][3]))
+
         record = record + 1
-#    for item in all_debts:
-#        print(item)
 
     print()
     input("Press Any Key to Return to Main Menu")    
@@ -92,7 +88,7 @@ def add_debt(bank_balance):
     print()
     debt_cost = input("Please Enter the Debt Cost... ")
 
-    params = (debt_name, debt_date,debt_cost)
+    params = (debt_name, debt_date, debt_cost)
 
     cur.execute("INSERT INTO Debts VALUES (NULL,?,?,?)", params)
     con.commit()
@@ -118,7 +114,7 @@ def remove_debt(bank_balance):
     con.commit()
 
     all_debts = cur.fetchall()
-#    print(all_debts)
+
     row_count = len(all_debts)
     record = 0
 
@@ -126,11 +122,11 @@ def remove_debt(bank_balance):
     print()
 
     while record < row_count:
-        print("     {:<6} {:<26} {:<17} {:<45}".format(all_debts[record][0],all_debts[record][1],all_debts[record][2],all_debts[record][3]))
-#       print(all_debts[record][0],all_debts[record][1],all_debts[record][2])
+        print("     {:<6} {:<26} {:<17} {:<45.2f}".format(all_debts[record][0],all_debts[record][1],all_debts[record][2],all_debts[record][3]))
+
         record = record + 1
-#    for item in all_debts:
-#        print(item)
+
+
     print()
     check = 0
     while check != "1":
@@ -142,8 +138,8 @@ def remove_debt(bank_balance):
             break
         else:
             cur.execute("DELETE FROM Debts WHERE debt_id=?", (todel,))
-
             con.commit()
+            break
     
     
     print()
@@ -167,8 +163,8 @@ def upcoming_debt_check(bank_balance):
     cur = con.cursor()
 
     days_list = []
-    total_cost = 0
-    new_balance = 0
+    total_cost = float(0)
+    new_balance = float(0)
     # get todays date
     current_date = datetime.date.today()
     
@@ -186,8 +182,6 @@ def upcoming_debt_check(bank_balance):
         day = current_date + datetime.timedelta(days=i)
         days_list.append(str(day.day))
     
-    #print(other_date)
-    #print(other_date.days)
 
     # Get all the debts from the database
     all_debts = cur.execute("SELECT * FROM Debts")
@@ -201,19 +195,21 @@ def upcoming_debt_check(bank_balance):
     print("Debt             Date Due            Debt Cost")
     print()
 
+    input(f"this is current balance at this point {bank_balance}")
+
     for record in records:
         if record[2] in days_list:
-            print("{:<16} {:<20} {:<16}".format(record[1],record[2],record[3]))
-            #print(f"{record[1]}             {record[2]}                   {record[3]}")
-            total_cost = total_cost + int(record[3])
-            new_balance = int(bank_balance) - total_cost
+            print("{:<16} {:<20} {:<16.2f}".format(record[1],record[2],record[3]))
+     
+            total_cost = total_cost + (record[3])
             
+    new_balance = bank_balance - total_cost        
 
     # Get all debt costs total and take them from bank balance into new balance to display to screen
     print()
-    print(f"You will need £{total_cost} in the bank to cover debts")
+    print(f"You will need £{total_cost:.2f} in the bank to cover debts")
     print()
-    print(f"Based on your current balance you will have £{new_balance} left")
+    print(f"Based on your current balance you will have £{new_balance:.2f} left")
     print()
     
     input("Press 'Enter' to return to the Main Menu...")
@@ -233,7 +229,7 @@ def bank_balance_update():
     print("*" * 100)
     print("""
     """ * 18)
-    new_bank_balance = input("Please Enter Your Bank Balance... ")
+    new_bank_balance = float(input("Please Enter Your Bank Balance... "))
     bank_balance = new_bank_balance
     
     mainmenu(bank_balance)
@@ -258,7 +254,7 @@ def mainmenu(bank_balance):
     print("""
     """ * 5)
     
-    choice = input(f"       Current Balance... £{bank_balance}                              Please Make a Selection... ")
+    choice = input(f"       Current Balance... £{bank_balance:.2f}                              Please Make a Selection... ")
 
     while choice != 1 or 2 or 3 or 4 or 5 or 6:
         if choice == "1":
@@ -275,7 +271,7 @@ def mainmenu(bank_balance):
             quit()
         else:
             mainmenu(bank_balance)        
-# Check to see if database already exist or not
+
 
 file_exists = os.path.exists('DebtRelief.db')
 
