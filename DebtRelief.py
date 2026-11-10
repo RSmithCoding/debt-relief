@@ -81,12 +81,15 @@ def add_debt(bank_balance):
     """ * 13)
     debt_name = input("Please Enter the Debt Name... ")
     print()
-    debt_date = input("Please Enter the Debt Payment Day of the Month...0 - 31 ")
+    debt_date = input("Please Enter the Debt Payment Day of the Month...1 - 31 ")
     print()
-    try: 
-        debt_cost = float(input("Please Enter the Debt Cost...£ "))
-    except ValueError:
-        print("Please enter a valid value..")
+
+    while True:
+
+        try: 
+            debt_cost = float(input("Please Enter the Debt Cost...£ "))
+        except ValueError:
+            print("Please enter a valid value..")
 
 
     params = (debt_name, debt_date, debt_cost)
