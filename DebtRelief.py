@@ -184,8 +184,21 @@ def upcoming_debt_check(bank_balance):
     current_date = datetime.date.today()
     
     # Get the number of days ahead that you would like to check for debts
-    days_ahead = input("How Many Days Ahead... ")
-    print()
+    
+    while True:
+            
+                days_ahead = input("How Many Days Ahead... 1 - 31 ")
+                try:
+                    day = int(days_ahead)
+                    if 1 <= day <= 31:
+                        print()
+                        break
+                    else:
+                        print("This needs to be a value between 1 - 31..")
+                except ValueError:
+                    print("Please enter a valid number between 1 - 31..")
+    
+    
     # Get the new date from adding days from input
     new_date = current_date + datetime.timedelta(days=float(days_ahead))
 
