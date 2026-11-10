@@ -232,9 +232,16 @@ def bank_balance_update():
     print("*" * 100)
     print("""
     """ * 18)
-    new_bank_balance = float(input("Please Enter Your Bank Balance... "))
-    bank_balance = new_bank_balance
-    
+
+    while True:
+
+        try:
+            new_bank_balance = float(input("Please Enter Your Bank Balance... "))
+            bank_balance = new_bank_balance
+            break
+        except ValueError:
+            print("Please enter a valid amount..")
+
     mainmenu(bank_balance)
 
 # Main Menu - Add Debt / List All Debts / Remove Debts / Upcoming Debts Check / Bank Balance Update
